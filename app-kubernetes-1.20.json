@@ -1,0 +1,57 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "vpc_id": "VPC-ID-HERE",
+      "subnet_id": "SUBNET-ID-HERE",
+      "security_group_id": "PUBLIC-SECGROUP-HERE" 
+      "access_key": "{{user `aws_access_key`}}",
+      "secret_key": "{{user `aws_secret_key`}}",
+      "associate_public_ip_address": "false",
+      "region": "us-east-1",
+      "source_ami": "ami-02eac2c0129f6376b",
+      "instance_type": "t2.micro",
+      "ssh_username": "centos",
+      "ssh_keypair_name": "",
+      "ami_name": "VDIGI-CENTOS-7-K8S-IMAGE-{{timestamp}}",
+      "run_tags": {
+        "OS_Version": "centos-7"
+      },
+      "tags": {
+        "Name": "VDIGI K8S Image",
+        "OS_Version": "Centos",
+        "Release": "Latest",
+        "Runner": "EC2"
+      }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": "scripts/install-ansible-centos.sh"
+    },
+    {
+      "type": "file",
+      "source": "files/k8s/aws-k8s-cni.tar",
+      "destination": "/tmp/aws-k8s-cni.tar"
+    },
+    {
+      "type": "file",
+      "source": "files/k8s/izctl-1-20.el7.x86_64.rpm",
+      "destination": "/tmp/izctl-1-20.el7.x86_64.rpm"
+    },
+    {
+      "type": "ansible-local",
+      "playbook_file":"../iac-ansible/playbook-kubernetes.yaml",
+      "role_paths": [
+        "../iac-ansible/roles/common",
+        "../iac-ansible/roles/kubernetes"
+      ],
+      "extra_arguments": [ "-vvvv" ]
+    }
+  ]
+}
