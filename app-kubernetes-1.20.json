@@ -1,21 +1,22 @@
 {
   "variables": {
-    "aws_access_key": "",
-    "aws_secret_key": ""
+    "aws_access_key": "{{env `AWS_ACCESS_KEY_ID`}}",
+    "aws_secret_key": "{{env `AWS_SECRET_KEY_ID`}}",
+    "ssh_username": "centos"
   },
   "builders": [
     {
       "type": "amazon-ebs",
       "vpc_id": "VPC-ID-HERE",
       "subnet_id": "SUBNET-ID-HERE",
-      "security_group_id": "PUBLIC-SECGROUP-HERE" 
+      "security_group_id": "PUBLIC-SECGROUP-HERE"
       "access_key": "{{user `aws_access_key`}}",
       "secret_key": "{{user `aws_secret_key`}}",
       "associate_public_ip_address": "false",
       "region": "us-east-1",
       "source_ami": "ami-02eac2c0129f6376b",
       "instance_type": "t2.micro",
-      "ssh_username": "centos",
+      "ssh_username": "{{user `ssh_username`}}",
       "ssh_keypair_name": "",
       "ami_name": "VDIGI-CENTOS-7-K8S-IMAGE-{{timestamp}}",
       "run_tags": {
